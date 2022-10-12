@@ -30,9 +30,11 @@ const EditArtist = () => {
             setImage(teste)
         }
 
-        try{            
-            const string = "/artists/" + loggedUserId;
-            getData(string);
+        try{   
+            if (loggedUserId){         
+                const string = "/artists/" + loggedUserId;
+                getData(string);
+        }
         }catch(erorr){
             alert("Server problema");
         };

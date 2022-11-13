@@ -2,22 +2,22 @@ import "./styles.css";
 import Song from "../../components/Song";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { api } from '../../services/api';
+import { api } from "../../services/api";
 import Play from "../../components/PlayMusic";
-import { Routes, useNavigate } from "react-router";
-import Icon from '../../components/Icon';
+import { useNavigate } from "react-router";
+import Icon from "../../components/Icon";
 import { useAlbum } from "../../contexts/Album";
 
 const Songs = () => {
-  const navigate = useNavigate()
-  const {songs, setSongs,album, setAlbum} = useAlbum();
+  const navigate = useNavigate();
+  const { songs, setSongs, album, setAlbum } = useAlbum();
   const [playIndex, setPlayIndex] = useState(0);
   const params = useParams();
 
   useEffect(() => {
     const getSongs = async () => {
       try {
-        const response = await api.get('/songs/fromAlbum/' + params.albumId);
+        const response = await api.get("/songs/fromAlbum/" + params.albumId);
         setSongs(response.data);
       } catch (error) {
         alert("error");
@@ -26,7 +26,7 @@ const Songs = () => {
     getSongs();
     const getAlbumData = async () => {
       try {
-        const response = await api.get('/albums/' + params.albumId);
+        const response = await api.get("/albums/" + params.albumId);
         setAlbum(response.data);
       } catch (error) {
         alert("error");
@@ -36,44 +36,58 @@ const Songs = () => {
   }, []);
 
   const handleNavigateEditAlbum = () => {
-    navigate('/editAlbum', ({
+    navigate("/editAlbum", {
       state: {
         album,
-        songs
-      }
-    }))
-  }
+        songs,
+      },
+    });
+  };
 
   return (
     <div className="Song">
       <div className="Banner">
-        <h1>{album.name ?? "Carregando..."}</h1>
-        <button className='IconButton' onClick={handleNavigateEditAlbum}>
-          <Icon iconType="Edit" />
-        </button>
-        <button onClick={() => navigate(-1)}>voltar</button>
+        <div className="name">
+          <div className="album">
+            <img src={album.image} />
+          </div>
+          <h1>{album.name ?? "Carregando..."}</h1>
+          <button className="IconButton" onClick={handleNavigateEditAlbum}>
+            <Icon iconType="Edit" />
+          </button>
+        </div>
+        <div>
+          <button
+            className="IconButton LogoutButton"
+            onClick={() => navigate(-1)}
+          >
+            <Icon iconType="Back" />
+            <p>Voltar</p>
+          </button>
+        </div>
       </div>
       <div className="Songs">
         {songs.map((song, index) => (
           <div className="song" key={index}>
-            <Song number={index + 1} name={song.name} handlePlay={() => setPlayIndex(index)}  participation={song.participation} />
-          </div>)
-        )}
-      </div>
-      {
-        songs.length > 0 && (
-          <div className="Play">
-            <Play
-              songs={songs}
-              playIndex={playIndex}
-              setPlayIndex={setPlayIndex}
+            <Song
+              number={index + 1}
+              name={song.name}
+              handlePlay={() => setPlayIndex(index)}
+              participations={song.participations}
             />
           </div>
-        )
-      }
-
+        ))}
+      </div>
+      {songs.length > 0 && (
+        <div className="Play">
+          <Play
+            songs={songs}
+            playIndex={playIndex}
+            setPlayIndex={setPlayIndex}
+          />
+        </div>
+      )}
     </div>
-
   );
 };
 
